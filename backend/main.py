@@ -290,6 +290,7 @@ async def get_staff_overview(current_user: Dict[str, Any] = Depends(get_current_
     }
 
 
+@app.get("/health")
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "service": "Smart Resort 360 Unified Backend", "currency": "INR (₹)"}
@@ -614,14 +615,7 @@ Resort Context:
         temperature=0.1
     )
     import json, time
-    raw_text = res["text"].strip()
-    if raw_text.startswith("```json"):
-        raw_text = raw_text[7:]
-    elif raw_text.startswith("```"):
-        raw_text = raw_text[3:]
-    if raw_text.endswith("```"):
-        raw_text = raw_text[:-3]
-    parsed = json.loads(raw_text.strip())
+    parsed = json.loads(res["text"])
     ticket = {
         "ticketId": f"TKT-{str(int(time.time()))[-6:]}",
         **parsed,
