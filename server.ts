@@ -497,17 +497,68 @@ function buildConversationContents(messages: any[], query?: string) {
 }
 
 // ============================================================================
-// 2. CORE BACKEND DATA ENDPOINTS
+// 2. CORE BACKEND DATA ENDPOINTS & VERCEL SERVICE BINDINGS
 // ============================================================================
+const BACKEND_URL = process.env.BACKEND_URL;
+
 app.get('/api/health', (_req: Request, res: Response) => {
-  res.json({ status: 'healthy', service: 'Smart Resort 360 Full-Stack Engine', currency: 'INR (₹)' });
+  res.json({
+    status: 'healthy',
+    service: 'Smart Resort 360 Full-Stack Engine',
+    currency: 'INR (₹)',
+    backend_bound: !!BACKEND_URL,
+  });
 });
 
-app.get('/api/guests/count', (_req: Request, res: Response) => {
+app.get('/api/guests/count', async (_req: Request, res: Response) => {
+  if (BACKEND_URL) {
+    try {
+      const targetUrl = new URL('/api/guests/count', BACKEND_URL);
+      const backendRes = await fetch(targetUrl.toString());
+      if (backendRes.ok) {
+        return res.json(await backendRes.json());
+      }
+    } catch (err) {
+      console.warn('[Vercel Binding] Backend call to BACKEND_URL failed, falling back to local:', err);
+    }
+  }
   res.json({ total_guests: 48, in_house_reservations: 19 });
 });
 
-app.get('/api/resort-state', (_req: Request, res: Response) => {
+// Proxy routes to FastAPI backend if BACKEND_URL is bound
+app.all(['/api/auth/*', '/api/customer/*', '/api/staff/*'], async (req: Request, res: Response, next) => {
+  if (BACKEND_URL) {
+    try {
+      const targetUrl = new URL(req.originalUrl, BACKEND_URL);
+      const headers: Record<string, string> = {};
+      if (req.headers.authorization) headers['authorization'] = req.headers.authorization;
+      if (req.headers['content-type']) headers['content-type'] = req.headers['content-type'] as string;
+      const resp = await fetch(targetUrl.toString(), {
+        method: req.method,
+        headers,
+        body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+      });
+      const data = await resp.json().catch(() => ({}));
+      return res.status(resp.status).json(data);
+    } catch (err) {
+      console.warn('[Vercel Binding] Failed to proxy to BACKEND_URL:', err);
+    }
+  }
+  next();
+});
+
+app.get('/api/resort-state', async (_req: Request, res: Response) => {
+  if (BACKEND_URL) {
+    try {
+      const targetUrl = new URL('/api/resort-state', BACKEND_URL);
+      const backendRes = await fetch(targetUrl.toString());
+      if (backendRes.ok) {
+        return res.json(await backendRes.json());
+      }
+    } catch (err) {
+      console.warn('[Vercel Binding] Backend call to BACKEND_URL failed for resort-state, falling back to local:', err);
+    }
+  }
   res.json(RESORT_DATA);
 });
 
@@ -516,6 +567,22 @@ app.get('/api/resort-state', (_req: Request, res: Response) => {
 // ============================================================================
 app.post('/api/ai/copilot', async (req: Request, res: Response) => {
   try {
+    if (BACKEND_URL) {
+      try {
+        const targetUrl = new URL('/api/ai/copilot', BACKEND_URL);
+        const backendRes = await fetch(targetUrl.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(req.body),
+        });
+        if (backendRes.ok) {
+          return res.json(await backendRes.json());
+        }
+      } catch (err) {
+        console.warn('[Vercel Binding] Backend call to BACKEND_URL failed for copilot, falling back to local:', err);
+      }
+    }
+
     const { query, userRole, messages, resortContext } = req.body;
     if (!query && (!messages || messages.length === 0)) {
       return res.status(400).json({ error: 'Query or messages parameter is required' });
@@ -572,6 +639,33 @@ ${formattedContext}`;
 // Real-Time Server-Sent Events (SSE) Streaming Endpoint for AI Copilot
 app.post('/api/ai/copilot/stream', async (req: Request, res: Response) => {
   try {
+    if (BACKEND_URL) {
+      try {
+        const targetUrl = new URL('/api/ai/copilot/stream', BACKEND_URL);
+        const backendRes = await fetch(targetUrl.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(req.body),
+        });
+        if (backendRes.ok && backendRes.body) {
+          res.setHeader('Content-Type', 'text/event-stream');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.setHeader('Connection', 'keep-alive');
+          res.flushHeaders?.();
+          const reader = backendRes.body.getReader();
+          const decoder = new TextDecoder();
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            res.write(decoder.decode(value));
+          }
+          return res.end();
+        }
+      } catch (err) {
+        console.warn('[Vercel Binding] Backend call to BACKEND_URL failed for copilot/stream, falling back to local:', err);
+      }
+    }
+
     const { query, userRole, messages, resortContext } = req.body;
     if (!query && (!messages || messages.length === 0)) {
       return res.status(400).json({ error: 'Query or messages parameter is required' });
@@ -653,6 +747,22 @@ ${formattedContext}`;
 // ============================================================================
 app.post('/api/ai/concierge', async (req: Request, res: Response) => {
   try {
+    if (BACKEND_URL) {
+      try {
+        const targetUrl = new URL('/api/ai/concierge', BACKEND_URL);
+        const backendRes = await fetch(targetUrl.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(req.body),
+        });
+        if (backendRes.ok) {
+          return res.json(await backendRes.json());
+        }
+      } catch (err) {
+        console.warn('[Vercel Binding] Backend call to BACKEND_URL failed for concierge, falling back to local:', err);
+      }
+    }
+
     const { query, guestName, roomNumber } = req.body;
     if (!query) {
       return res.status(400).json({ error: 'Query parameter is required' });
@@ -730,6 +840,22 @@ Do not use pretentious billionaire vocabulary.`;
 // ============================================================================
 app.post('/api/ai/issue-agent', async (req: Request, res: Response) => {
   try {
+    if (BACKEND_URL) {
+      try {
+        const targetUrl = new URL('/api/ai/issue-agent', BACKEND_URL);
+        const backendRes = await fetch(targetUrl.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(req.body),
+        });
+        if (backendRes.ok) {
+          return res.json(await backendRes.json());
+        }
+      } catch (err) {
+        console.warn('[Vercel Binding] Backend call to BACKEND_URL failed for issue-agent, falling back to local:', err);
+      }
+    }
+
     const { complaint, location, imageBase64, reportedBy, resortContext } = req.body;
     if (!complaint) {
       return res.status(400).json({ error: 'Complaint text is required' });
@@ -816,6 +942,18 @@ Return a valid JSON object matching this schema strictly:
 // ============================================================================
 app.get('/api/ai/operations-briefing', async (_req: Request, res: Response) => {
   try {
+    if (BACKEND_URL) {
+      try {
+        const targetUrl = new URL('/api/ai/operations-briefing', BACKEND_URL);
+        const backendRes = await fetch(targetUrl.toString());
+        if (backendRes.ok) {
+          return res.json(await backendRes.json());
+        }
+      } catch (err) {
+        console.warn('[Vercel Binding] Backend call to BACKEND_URL failed for operations-briefing, falling back to local:', err);
+      }
+    }
+
     const briefing = {
       timestamp: 'Today 14:30 PM',
       occupancy: `${RESORT_DATA.occupancy.occupancyRate}% (${RESORT_DATA.occupancy.occupiedRooms}/${RESORT_DATA.occupancy.totalRooms} Rooms & Villas Occupied)`,
@@ -843,6 +981,22 @@ app.get('/api/ai/operations-briefing', async (_req: Request, res: Response) => {
 // 7. AI ACTIONS WITH HUMAN CONFIRMATION GUARDRAIL
 // ============================================================================
 app.post('/api/ai/execute-action', async (req: Request, res: Response) => {
+  if (BACKEND_URL) {
+    try {
+      const targetUrl = new URL('/api/ai/execute-action', BACKEND_URL);
+      const backendRes = await fetch(targetUrl.toString(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req.body),
+      });
+      if (backendRes.ok) {
+        return res.json(await backendRes.json());
+      }
+    } catch (err) {
+      console.warn('[Vercel Binding] Backend call to BACKEND_URL failed for execute-action, falling back to local:', err);
+    }
+  }
+
   const { actionType, payload, userConfirmed } = req.body;
 
   const CONSEQUENTIAL_ACTIONS = [

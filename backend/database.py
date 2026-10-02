@@ -1,5 +1,9 @@
-from backend.auth import hash_password
-from backend.models import RoleEnum
+try:
+    from backend.auth import hash_password
+    from backend.models import RoleEnum
+except ImportError:
+    from auth import hash_password
+    from models import RoleEnum
 
 # In-memory database with pre-hashed cryptographic credentials
 # Designed cleanly to map directly to PostgreSQL / Supabase schemas in future phases
