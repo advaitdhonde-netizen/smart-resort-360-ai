@@ -1,0 +1,8 @@
+{
+  "name": "Smart Resort 360",
+  "description": "The Living Architecture. A unified digital operating system for intelligent luxury resorts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

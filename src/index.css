@@ -1,0 +1,386 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Cinzel', serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --color-gold-300: #e6d3a3;
+  --color-gold-400: #c8aa6e;
+  --color-gold-500: #ad8d4d;
+  --color-gold-600: #8c7038;
+}
+
+:root, [data-theme="dark"], .dark {
+  --bg-primary: #050505;
+  --bg-surface: #08090d;
+  --bg-surface-secondary: #0e1118;
+  --bg-card: rgba(255, 255, 255, 0.02);
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
+  --bg-input: #0e1118;
+  --text-primary: #EDEDED;
+  --text-secondary: #9E9E9E;
+  --text-muted: #737373;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --accent-gold: #c8aa6e;
+  --accent-gold-hover: #d8bc7f;
+  --accent-gold-subtle: rgba(200, 170, 110, 0.15);
+  --success-color: #34d399;
+  --warning-color: #fbbf24;
+  --error-color: #f87171;
+  --vignette-start: transparent;
+  --vignette-via: rgba(5, 5, 5, 0.4);
+  --vignette-end: rgba(5, 5, 5, 0.85);
+  --nav-scrolled: rgba(5, 5, 5, 0.85);
+  --nav-unscrolled: rgba(5, 5, 5, 0.8);
+  --os-modal-shadow: 0 0 90px rgba(0, 0, 0, 0.95);
+  --track-bg: #050505;
+}
+
+[data-theme="light"], .light {
+  /* Sophisticated SAGE / SAND / INK Luxury Resort Palette */
+  --bg-primary: #E5E2D6;                /* Main background */
+  --bg-surface: #EEECE4;                /* Elevated surfaces */
+  --bg-surface-secondary: #DCD9CC;      /* Secondary background */
+  --bg-card: #F0EEE7;                   /* Cards */
+  --bg-card-hover: #E7E4DC;             /* Card hover */
+  --bg-input: #EEECE4;                  /* Input surfaces */
+  
+  --text-primary: #26332D;              /* Deep forest charcoal */
+  --text-secondary: #36443D;            /* Secondary dark green */
+  --text-muted: #68716B;                /* Muted green-gray */
+  
+  --border-subtle: #D0CCC0;             /* Thin olive-gray border */
+  --border-medium: #B8AD9B;             /* Warm stone border */
+  
+  --accent-gold: #B58A52;               /* Aged champagne gold */
+  --accent-gold-hover: #9E733D;
+  --accent-gold-highlight: #C5A66A;     /* Highlight gold */
+  --accent-gold-subtle: rgba(181, 138, 82, 0.14);
+  
+  --color-sage: #7D8C7C;
+  --color-deep-olive: #4D5C4D;
+  --color-warm-stone: #B8AD9B;
+  --color-soft-clay: #A77C61;
+
+  --success-color: #2D5A3E;             /* Refined deep forest green */
+  --warning-color: #A36B20;             /* Warm amber */
+  --error-color: #9E382B;               /* Muted terracotta red */
+  
+  --vignette-start: transparent;
+  --vignette-via: rgba(229, 226, 214, 0.3);
+  --vignette-end: rgba(229, 226, 214, 0.85);
+  
+  --nav-scrolled: rgba(220, 217, 204, 0.92);  /* Slightly darker sage/stone tint than main page */
+  --nav-unscrolled: rgba(220, 217, 204, 0.85);
+  --os-modal-shadow: 0 20px 60px rgba(38, 51, 45, 0.12);
+  --track-bg: #DCD9CC;
+}
+
+@layer base {
+  * {
+    border-color: var(--border-subtle);
+  }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  h1, h2, h3, .font-editorial {
+    font-family: var(--font-serif);
+  }
+}
+
+/* ==========================================================================
+   SAGE / SAND / INK LIGHT THEME SYSTEM OVERRIDES
+   Maps dark utility classes to natural materials, warm stone, and ink tones
+   ========================================================================== */
+
+.light {
+  color-scheme: light;
+}
+
+/* Base Body & Main Containers */
+.light body {
+  background-color: #E5E2D6 !important;
+  color: #26332D !important;
+}
+
+.light div.bg-\[\#050505\] {
+  background-color: #E5E2D6 !important;
+  color: #26332D !important;
+}
+
+.light .text-\[\#EDEDED\] {
+  color: #26332D !important;
+}
+
+/* Modals & Overlays */
+.light .bg-\[\#050505\]\/95,
+.light .bg-\[\#050505\]\/90 {
+  background-color: rgba(229, 226, 214, 0.96) !important;
+}
+
+.light .bg-\[\#08090d\],
+.light .bg-\[\#090b10\],
+.light .bg-\[\#07080a\]\/85,
+.light .bg-\[\#08090c\]\/75,
+.light .bg-\[\#07090c\]\/85 {
+  background-color: #EEECE4 !important;
+  border-color: #D0CCC0 !important;
+  box-shadow: 0 16px 48px -12px rgba(38, 51, 45, 0.12) !important;
+}
+
+.light aside.bg-\[\#07080b\]\/80 {
+  background-color: #DCD9CC !important;
+  border-color: #D0CCC0 !important;
+}
+
+.light .bg-black\/40,
+.light .bg-black\/50,
+.light .bg-black\/60 {
+  background-color: #DCD9CC !important;
+  border-color: #D0CCC0 !important;
+}
+
+/* Cards & Surfaces (warm stone and subtle sage - no white rectangles!) */
+.light .bg-white\/\[0\.02\],
+.light .bg-white\/\[0\.03\],
+.light .bg-white\/\[0\.04\],
+.light .bg-white\/\[0\.015\] {
+  background-color: #F0EEE7 !important;
+  border-color: #D0CCC0 !important;
+  box-shadow: 0 4px 16px -4px rgba(38, 51, 45, 0.05) !important;
+}
+
+.light .hover\:bg-white\/\[0\.04\]:hover,
+.light .hover\:bg-white\/\[0\.05\]:hover,
+.light .hover\:bg-white\/\[0\.08\]:hover {
+  background-color: #E7E4DC !important;
+}
+
+.light .bg-white\/\[0\.06\],
+.light .bg-white\/\[0\.08\],
+.light .bg-white\/10 {
+  background-color: #E4E7E1 !important; /* Subtle sage-stone elevated tint */
+  border-color: #C5C0B2 !important;
+}
+
+/* Inputs & Selects */
+.light select.bg-\[\#0e1118\],
+.light input.bg-\[\#0e1118\],
+.light .bg-\[\#0e1118\],
+.light textarea,
+.light input[type="text"],
+.light input[type="date"],
+.light input[type="time"],
+.light input[type="number"],
+.light select {
+  background-color: #EEECE4 !important;
+  color: #26332D !important;
+  border-color: #D0CCC0 !important;
+}
+
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #7D8C7C !important;
+}
+
+/* Typography in Light Mode */
+.light .text-white {
+  color: #26332D !important;
+}
+
+.light .text-neutral-200 {
+  color: #2B3830 !important;
+}
+
+.light .text-neutral-300 {
+  color: #36443D !important;
+}
+
+.light .text-neutral-400 {
+  color: #68716B !important;
+}
+
+.light .text-neutral-500 {
+  color: #7D8C7C !important;
+}
+
+.light .text-neutral-600 {
+  color: #9CA69C !important;
+}
+
+/* Borders in Light Mode (thin olive-gray) */
+.light .border-white\/\[0\.05\],
+.light .border-white\/\[0\.06\],
+.light .border-white\/\[0\.07\],
+.light .border-white\/\[0\.08\],
+.light .border-white\/\[0\.09\],
+.light .border-white\/\[0\.1\],
+.light .border-white\/10,
+.light .border-white\/20 {
+  border-color: #D0CCC0 !important;
+}
+
+.light .divide-white\/\[0\.06\] > :not([hidden]) ~ :not([hidden]),
+.light .divide-white\/10 > :not([hidden]) ~ :not([hidden]),
+.light .divide-white\/\[0\.05\] > :not([hidden]) ~ :not([hidden]),
+.light .divide-white\/\[0\.08\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #D0CCC0 !important;
+}
+
+/* Accent Gold in Light Mode: Aged Champagne Gold #B58A52 */
+.light .text-\[\#c8aa6e\] {
+  color: #B58A52 !important;
+}
+
+.light .bg-\[\#c8aa6e\] {
+  background-color: #B58A52 !important;
+  color: #F0EEE7 !important;
+}
+
+.light .hover\:bg-\[\#d8bc7f\]:hover {
+  background-color: #9E733D !important;
+}
+
+.light .border-\[\#c8aa6e\]\/30,
+.light .border-\[\#c8aa6e\]\/40,
+.light .border-\[\#c8aa6e\]\/60 {
+  border-color: #B58A52 !important;
+}
+
+.light .bg-\[\#c8aa6e\]\/10,
+.light .bg-\[\#c8aa6e\]\/20 {
+  background-color: rgba(181, 138, 82, 0.14) !important;
+}
+
+/* Hero Gradient Text in Light Mode */
+.light .bg-gradient-to-r.from-white.via-\[\#EDEDED\].to-neutral-500 {
+  background-image: linear-gradient(to right, #18251F, #222F29, #26332D) !important;
+}
+
+/* Navigation Bar in Light Mode (slightly darker sage/stone tint than main page) */
+.light header.bg-\[\#050505\]\/85 {
+  background-color: rgba(220, 217, 204, 0.92) !important;
+  border-color: #D0CCC0 !important;
+}
+
+.light header .bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, rgba(220, 217, 204, 0.88), transparent) !important;
+}
+
+.light header nav button {
+  color: #68716B !important;
+}
+
+.light header nav button:hover {
+  color: #26332D !important;
+}
+
+.light header nav button.text-\[\#c8aa6e\] {
+  color: #B58A52 !important;
+}
+
+/* AI / Intelligence UI in Light Mode */
+.light .bg-gradient-to-br.from-white\/\[0\.04\].to-white\/\[0\.01\] {
+  background-image: linear-gradient(to bottom right, #F0EEE7, #EEECE4) !important;
+  border-color: #B58A52 !important;
+}
+
+.light .shadow-\[0_0_24px_rgba\(200\,170\,110\,0\.25\)\] {
+  box-shadow: 0 4px 20px rgba(181, 138, 82, 0.22) !important;
+}
+
+/* Status Badges in Light Mode: Refined Natural Earthy & Mineral Tones */
+.light .text-emerald-400 {
+  color: #2D5A3E !important;
+}
+.light .bg-emerald-400\/10,
+.light .bg-emerald-500\/10,
+.light .bg-emerald-500\/20 {
+  background-color: rgba(45, 90, 62, 0.12) !important;
+  border-color: rgba(45, 90, 62, 0.28) !important;
+}
+
+.light .text-amber-400,
+.light .text-amber-300 {
+  color: #A36B20 !important;
+}
+.light .bg-amber-400\/10,
+.light .bg-amber-500\/10,
+.light .bg-amber-500\/20 {
+  background-color: rgba(163, 107, 32, 0.12) !important;
+  border-color: rgba(163, 107, 32, 0.28) !important;
+}
+
+.light .text-red-400 {
+  color: #9E382B !important;
+}
+.light .bg-red-500\/10,
+.light .bg-red-400\/10 {
+  background-color: rgba(158, 56, 43, 0.12) !important;
+  border-color: rgba(158, 56, 43, 0.28) !important;
+}
+
+.light .text-cyan-400 {
+  color: #245D6E !important;
+}
+.light .bg-cyan-400\/10 {
+  background-color: rgba(36, 93, 110, 0.12) !important;
+  border-color: rgba(36, 93, 110, 0.28) !important;
+}
+
+.light .text-orange-400 {
+  color: #A75B26 !important;
+}
+.light .bg-orange-400\/10 {
+  background-color: rgba(167, 91, 38, 0.12) !important;
+  border-color: rgba(167, 91, 38, 0.28) !important;
+}
+
+.light .text-purple-400 {
+  color: #6A407E !important;
+}
+.light .bg-purple-400\/10 {
+  background-color: rgba(106, 64, 126, 0.12) !important;
+  border-color: rgba(106, 64, 126, 0.28) !important;
+}
+
+/* Tables and Dividers in Light Mode */
+.light table, .light tr, .light td, .light th {
+  border-color: #D0CCC0 !important;
+}
+.light th {
+  color: #36443D !important;
+  background-color: #DCD9CC !important;
+}
+.light tr:hover td {
+  background-color: #E7E4DC !important;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--track-bg, #050505);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 170, 110, 0.25);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 170, 110, 0.45);
+}
+
+.light ::-webkit-scrollbar-track {
+  background: #DCD9CC !important;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(181, 138, 82, 0.35) !important;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(181, 138, 82, 0.55) !important;
+}
